@@ -531,16 +531,30 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                 ),
               ),
               const SizedBox(height: 6),
-              Text(
-                '${(message.timestamp.hour > 12 ? message.timestamp.hour - 12 : message.timestamp.hour)}:${message.timestamp.minute.toString().padLeft(2, '0')}:${message.timestamp.second.toString().padLeft(2, '0')}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: message.isUser
-                      ? Colors.white.withOpacity(0.7)
-                      : (themeMode == ThemeMode.dark
-                          ? Colors.white70
-                          : Colors.black54),
-                ),
+              Row(
+                children: [
+                  // Text(
+                  //   'send at: ',
+                  //   style: AppStyles.styleMedium12().copyWith(
+                  //     color: message.isUser
+                  //         ? Colors.white.withOpacity(0.7)
+                  //         : (themeMode == ThemeMode.dark
+                  //             ? Colors.white70
+                  //             : Colors.black54),
+                  //   ),
+                  // ),
+                  Text(
+                    '${(message.timestamp.hour > 12 ? message.timestamp.hour - 12 : message.timestamp.hour)}:${message.timestamp.minute.toString().padLeft(2, '0')}:${message.timestamp.second.toString().padLeft(2, '0')}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: message.isUser
+                          ? Colors.white.withOpacity(0.7)
+                          : (themeMode == ThemeMode.dark
+                              ? Colors.white70
+                              : Colors.black54),
+                    ),
+                  )
+                ],
               )
             ],
           ),
@@ -550,11 +564,11 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   }
 
   _scroll() {
-    Future.delayed(const Duration(milliseconds: 300), () {
+    Future.delayed(const Duration(milliseconds: 50), () {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 50),
           curve: Curves.easeOut,
         );
       }
@@ -710,11 +724,11 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       });
 
       // Scroll to bottom after a small delay to ensure the list has updated
-      Future.delayed(const Duration(milliseconds: 300), () {
+      Future.delayed(const Duration(milliseconds: 50), () {
         if (_scrollController.hasClients) {
           _scrollController.animateTo(
             _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 50),
             curve: Curves.easeOut,
           );
         }
