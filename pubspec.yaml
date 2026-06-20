@@ -28,19 +28,23 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  animate_do: ^4.2.0
   cupertino_icons: ^1.0.8
   dio: ^5.8.0+1
-  easy_localization: ^3.0.7+1
   flutter:
     sdk: flutter
   flutter_animate: ^4.5.2
   flutter_bloc: ^9.1.0
+  google_fonts: ^6.2.1
   image_picker: ^1.1.2
   loading_animation_widget: ^1.3.0
-  speech_to_text: ^6.6.0
   shared_preferences: ^2.5.3
+  svg_flutter: ^0.0.1
+  wave: ^0.2.2
 
 dev_dependencies:
+  flutter_ar_json_extractor: null
+  flutter_en_json_extractor: null
   flutter_launcher_icons: "^0.14.3"
   flutter_lints: ^4.0.0
   flutter_test:
@@ -62,8 +66,9 @@ flutter:
   uses-material-design: true
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/translations/
-    - assets/images/ 
+    - assets/icon/
+    - assets/fonts/
+    - assets/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
   # For details regarding adding assets from package dependencies, see
