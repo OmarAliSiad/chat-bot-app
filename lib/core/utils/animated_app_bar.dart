@@ -23,7 +23,7 @@ class AnimatedCustomAppBar extends StatefulWidget
     this.onTapBack,
     this.onTapClose,
     this.onTapSuffix,
-    this.waveColor = Colors.blue,
+    this.waveColor = Colors.black38,
     this.backgroundColor,
     this.leading,
   });
@@ -158,10 +158,9 @@ class _AnimatedCustomAppBarState extends State<AnimatedCustomAppBar>
                       // Right side icon (close or notification)
                       widget.thereIsIcon
                           ? IconButton(
-                              onPressed: widget.onTapClose ??
-                                  () => Navigator.of(context).pop(),
+                              onPressed: widget.onTapClose ?? () {},
                               icon: const Icon(
-                                Icons.close,
+                                Icons.dark_mode,
                               ),
                               color: defaultTextColor,
                             )

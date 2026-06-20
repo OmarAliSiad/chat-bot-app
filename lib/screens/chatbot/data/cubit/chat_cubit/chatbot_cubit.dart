@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'package:ai_app/chatbot/data/model/message.dart';
+import 'package:ai_app/screens/chatbot/data/model/message.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -87,7 +87,7 @@ class ChatCubit extends Cubit<ChatState> {
       {String? imagePath, String? filePath}) async {
     try {
       const apiKey =
-          'AIzaSyBLTEcKLPeOAeq89fasRpA0s6KbPzeVaJA'; // Replace with your actual API key
+          'AIzaSyBxN2AO8itNbzkuH021Is4BJw2RKxUJ5Cw'; // Replace with your actual API key
 
       // Use the correct, current Gemini API endpoint structure
       const String url =

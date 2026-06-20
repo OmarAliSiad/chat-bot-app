@@ -1,10 +1,8 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 ThemeData darkTheme(BuildContext context) {
   TextStyle whiteStyleColor = const TextStyle(color: Colors.white);
   return ThemeData(
-    fontFamily: context.locale.toString() == 'ar' ? 'Cairo' : 'Poppins',
     brightness: Brightness.dark,
     scaffoldBackgroundColor: Colors.grey[900], //232524
     textSelectionTheme: const TextSelectionThemeData(

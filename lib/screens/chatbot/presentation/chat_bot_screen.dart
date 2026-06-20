@@ -1,18 +1,17 @@
-import 'dart:developer';
 import 'dart:io';
-import 'package:ai_app/chatbot/data/cubit/chat_cubit/chatbot_cubit.dart';
-import 'package:ai_app/chatbot/data/cubit/chat_cubit/chatbot_state.dart';
-import 'package:ai_app/chatbot/data/model/message.dart';
 import 'package:ai_app/core/themeMode/theme_mode_cubit.dart';
 import 'package:ai_app/core/utils/animated_app_bar.dart';
 import 'package:ai_app/core/utils/app_styles.dart';
-import 'package:ai_app/core/utils/show_scaffold_messanger.dart';
+import 'package:ai_app/screens/chatbot/data/cubit/chat_cubit/chatbot_cubit.dart';
+import 'package:ai_app/screens/chatbot/data/cubit/chat_cubit/chatbot_state.dart';
+import 'package:ai_app/screens/chatbot/data/model/message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:speech_to_text/speech_to_text.dart';
+import 'package:wave/config.dart';
+import 'package:wave/wave.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -22,6 +21,22 @@ class ChatbotScreen extends StatefulWidget {
 }
 
 class _ChatbotScreenState extends State<ChatbotScreen> {
+  static const _backgroundColor = Colors.black87;
+
+  final List<Color> _colors = [
+    Colors.black45,
+    Colors.black87,
+  ];
+
+  static const _durations = [
+    5000,
+    4000,
+  ];
+
+  static const _heightPercentages = [
+    0.65,
+    0.66,
+  ];
   final TextEditingController _messageController = TextEditingController();
   final ImagePicker _imagePicker = ImagePicker();
   String? _selectedImagePath;
@@ -32,12 +47,25 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   Widget build(BuildContext context) {
     final themeMode = context.watch<ThemeModeCubit>().currentTheme;
     return Scaffold(
-      appBar: AnimatedCustomAppBar(
-        waveColor: Colors.blue.shade700,
-        backgroundColor: Colors.blue.shade900,
-        textStyle: AppStyles.styleSemiBold20(),
-        title: 'AI ChatBot',
-        thereIsIcon: false,
+      appBar: AppBar(
+        centerTitle: true,
+        elevation: 0.0,
+        leadingWidth: 0.0,
+        flexibleSpace: WaveWidget(
+          config: CustomConfig(
+            colors: _colors,
+            durations: _durations,
+            heightPercentages: _heightPercentages,
+          ),
+          backgroundColor: _backgroundColor,
+          size: const Size(double.infinity, double.infinity),
+          waveAmplitude: 0,
+        ),
+        leading: const SizedBox(),
+        title: Text(
+          'Ai ChatBot',
+          style: AppStyles.styleSemiBold20().copyWith(color: Colors.white),
+        ),
       ),
       backgroundColor: themeMode == ThemeMode.dark
           ? const Color(0xFF121212)
@@ -196,12 +224,10 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
-                                Icons.insert_drive_file_rounded,
-                                color: themeMode == ThemeMode.dark
-                                    ? Colors.blue
-                                    : const Color(0xFF3D5AFE),
-                              ),
+                              Icon(Icons.insert_drive_file_rounded,
+                                  color: themeMode == ThemeMode.dark
+                                      ? Colors.black
+                                      : Colors.black),
                               const SizedBox(width: 8),
                               Text(
                                 _selectedFilePath!.split('/').last,
@@ -278,11 +304,54 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                 //   onPressed: _pickFile,
                 //   themeMode: themeMode,
                 // ),
-                // const SizedBox(width: 8),
-                _buildIconButton(
-                  icon: Icons.photo_rounded,
-                  onPressed: _pickImage,
-                  themeMode: themeMode,
+                //  SizedBox(width: 8),
+                BlocBuilder<ChatCubit, ChatState>(
+                  builder: (context, state) {
+                    return _buildIconButton(
+                      icon: Icons.photo_rounded,
+                      onPressed: () {
+                        if (state.isLoading) {
+                          return;
+                        } else {
+                          // Show language selection dialog
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text(
+                                  'Pick image from galleary or camera',
+                                  style: AppStyles.styleMedium15(),
+                                ),
+                                content: Row(
+                                  children: [
+                                    Expanded(
+                                      child: ListTile(
+                                        title: const Text('galleary'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          _pickImage(ImageSource.gallery);
+                                        },
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: ListTile(
+                                        title: const Text('camera'),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          _pickImage(ImageSource.camera);
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        }
+                      },
+                      themeMode: themeMode,
+                    );
+                  },
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -305,6 +374,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                     ),
                     child: TextField(
                       controller: _messageController,
+                      cursorColor: Colors.black,
                       style: TextStyle(
                         color: themeMode == ThemeMode.dark
                             ? Colors.white
@@ -334,12 +404,11 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                   builder: (context, state) {
                     return _buildIconButton(
                       icon: Icons.mic_outlined,
-                      onPressed:
-                          state.isLoading ? _scroll() : () => openMicroPhone(),
+                      onPressed: state.isLoading ? _scroll() : () => _scroll(),
                       themeMode: themeMode,
                       color: themeMode == ThemeMode.dark
-                          ? Colors.blue
-                          : const Color(0xFF3D5AFE),
+                          ? Colors.black
+                          : Colors.black,
                     );
                   },
                 ),
@@ -353,8 +422,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                           : () => _sendMessage(context),
                       themeMode: themeMode,
                       color: themeMode == ThemeMode.dark
-                          ? Colors.blue
-                          : const Color(0xFF3D5AFE),
+                          ? Colors.black
+                          : Colors.black,
                     );
                   },
                 ),
@@ -424,9 +493,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           decoration: BoxDecoration(
             color: message.isUser
                 ? (themeMode == ThemeMode.dark
-                    ? const Color(0xFF0D47A1)
-                    : const Color(0xFF3D5AFE))
-                : (themeMode == ThemeMode.dark
+                    ? const Color(0xFF1E1E1E)
+                    : const Color(0xFF1E1E1E))
+                : (themeMode == ThemeMode.dark  
                     ? const Color(0xFF1E1E1E)
                     : Colors.white),
             borderRadius: BorderRadius.circular(20),
@@ -531,30 +600,16 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                 ),
               ),
               const SizedBox(height: 6),
-              Row(
-                children: [
-                  // Text(
-                  //   'send at: ',
-                  //   style: AppStyles.styleMedium12().copyWith(
-                  //     color: message.isUser
-                  //         ? Colors.white.withOpacity(0.7)
-                  //         : (themeMode == ThemeMode.dark
-                  //             ? Colors.white70
-                  //             : Colors.black54),
-                  //   ),
-                  // ),
-                  Text(
-                    '${(message.timestamp.hour > 12 ? message.timestamp.hour - 12 : message.timestamp.hour)}:${message.timestamp.minute.toString().padLeft(2, '0')}:${message.timestamp.second.toString().padLeft(2, '0')}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: message.isUser
-                          ? Colors.white.withOpacity(0.7)
-                          : (themeMode == ThemeMode.dark
-                              ? Colors.white70
-                              : Colors.black54),
-                    ),
-                  )
-                ],
+              Text(
+                '${(message.timestamp.hour > 12 ? (message.timestamp.hour - 12).toString().padLeft(2, '0') : message.timestamp.hour.toString().padLeft(2, '0'))}:${message.timestamp.minute.toString().padLeft(2, '0')}:${message.timestamp.second.toString().padLeft(2, '0')}',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: message.isUser
+                      ? Colors.white.withOpacity(0.7)
+                      : (themeMode == ThemeMode.dark
+                          ? Colors.white70
+                          : Colors.black54),
+                ),
               )
             ],
           ),
@@ -564,11 +619,11 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   }
 
   _scroll() {
-    Future.delayed(const Duration(milliseconds: 50), () {
+    Future.delayed(const Duration(milliseconds: 200), () {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 50),
+          duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
         );
       }
@@ -658,9 +713,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     );
   }
 
-  Future<void> _pickImage() async {
-    final XFile? image =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? image = await _imagePicker.pickImage(source: source);
     if (image != null) {
       setState(() {
         _selectedImagePath = image.path;
@@ -677,42 +731,63 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   //   }
   // }
 
-  void openMicroPhone() async {
-    final SpeechToText speech = SpeechToText();
-    bool available = await speech.initialize(
-      onStatus: (status) {
-        log('Speech recognition status: $status');
-      },
-      onError: (errorNotification) {
-        log('Speech recognition error: $errorNotification');
-      },
-    );
+  // void openMicroPhone() async {
+  //   final SpeechToText speech = SpeechToText();
+  //   bool available = await speech.initialize(
+  //     onStatus: (status) {
+  //       log('Speech recognition status: $status');
+  //       if (status == 'done'.tr()) {
+  //         if (_messageController.text.isEmpty) {
+  //           showScaffoldMessanger(
+  //               context, 'No speech detected'.tr(), Colors.orange);
+  //         }
+  //       }
+  //     },
+  //   );
 
-    if (available) {
-      speech.listen(
-        onResult: (result) {
-          if (result.finalResult) {
-            setState(() {
-              _messageController.text = result.recognizedWords;
-            });
-          }
-        },
-        partialResults: true,
-        cancelOnError: true,
-      );
-      showScaffoldMessanger(context, 'listening', Colors.green);
-    } else {
-      showScaffoldMessanger(
-          context, 'Speech recognition not available', Colors.red);
-    }
-  }
+  //   if (available) {
+  //     final locales = await speech.locales();
+  //     // Find available locales
+  //     final arabicLocale = locales.firstWhere(
+  //       (locale) => locale.localeId.startsWith('ar_'.tr()),
+  //     );
+
+  //     final englishLocale = locales.firstWhere(
+  //       (locale) => locale.localeId.startsWith('en_'.tr()),
+  //     );
+
+  //     // Clear previous text
+  //     _messageController.clear();
+
+  //     // Start listening with the most appropriate locale
+  //     final localeToUse = arabicLocale ?? englishLocale;
+
+  //     speech.listen(
+  //       onResult: (result) {
+  //         if (result.finalResult) {
+  //           setState(() {
+  //             _messageController.text = result.recognizedWords;
+  //             _messageController.text = _messageController.text.trim();
+  //           });
+  //         }
+  //       },
+  //       partialResults: true,
+  //       cancelOnError: true,
+  //       listenMode: ListenMode.confirmation,
+  //       localeId: localeToUse.localeId,
+  //     );
+  //   } else {
+  //     showScaffoldMessanger(
+  //         context, 'Speech recognition not available'.tr(), Colors.red);
+  //   }
+  // }
 
   void _sendMessage(BuildContext context) {
     if (_messageController.text.isNotEmpty ||
         _selectedImagePath != null ||
         _selectedFilePath != null) {
       context.read<ChatCubit>().sendMessage(
-            _messageController.text,
+            _messageController.text.trim(),
             imagePath: _selectedImagePath,
             filePath: _selectedFilePath,
           );
@@ -724,11 +799,11 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       });
 
       // Scroll to bottom after a small delay to ensure the list has updated
-      Future.delayed(const Duration(milliseconds: 50), () {
+      Future.delayed(const Duration(milliseconds: 200), () {
         if (_scrollController.hasClients) {
           _scrollController.animateTo(
             _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 50),
+            duration: const Duration(milliseconds: 200),
             curve: Curves.easeOut,
           );
         }

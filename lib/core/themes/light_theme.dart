@@ -1,12 +1,10 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 ThemeData lightTheme(BuildContext context) {
   TextStyle blackedStyleColor = const TextStyle(color: Colors.black);
   return ThemeData(
-    fontFamily: context.locale.toString() == 'ar' ? 'Cairo' : 'Poppins',
     brightness: Brightness.light,
-    dialogTheme: const DialogTheme(
+    dialogTheme: const DialogThemeData(
       backgroundColor: Colors.white,
     ),
     pageTransitionsTheme: const PageTransitionsTheme(builders: {

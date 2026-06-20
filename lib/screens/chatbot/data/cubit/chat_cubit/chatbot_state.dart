@@ -1,5 +1,5 @@
 
-import 'package:ai_app/chatbot/data/model/message.dart';
+import 'package:ai_app/screens/chatbot/data/model/message.dart';
 
 class ChatState {
   final List<Message> messages;

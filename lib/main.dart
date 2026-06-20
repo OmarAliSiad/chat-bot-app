@@ -1,24 +1,14 @@
-import 'package:ai_app/chatbot/data/cubit/chat_cubit/chatbot_cubit.dart';
-import 'package:ai_app/chatbot/presentation/chat_bot_screen.dart';
 import 'package:ai_app/core/themeMode/theme_mode_cubit.dart';
 import 'package:ai_app/core/themes/dark_theme.dart';
 import 'package:ai_app/core/themes/light_theme.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:ai_app/screens/chatbot/data/cubit/chat_cubit/chatbot_cubit.dart';
+import 'package:ai_app/screens/page_view/preseantion/views/page_view.dart';
+import 'package:ai_app/screens/splash/presnation/views/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await EasyLocalization.ensureInitialized();
-
-  runApp(
-    EasyLocalization(
-      supportedLocales: const [Locale('en')], // Add all your supported locales
-      path: 'assets/translations', // Path to your translation files
-      fallbackLocale: const Locale('en'),
-      child: const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -38,15 +28,15 @@ class MyApp extends StatelessWidget {
             themeMode = state.themeMode;
           }
           return MaterialApp(
+            routes: {
+              PageScreen.id: (context) => const PageScreen(),
+              SplashView.id: (context) => const SplashView(),
+            },
             debugShowCheckedModeBanner: false,
             themeMode: themeMode,
             theme: lightTheme(context),
             darkTheme: darkTheme(context),
-            // Add these three lines for EasyLocalization
-            localizationsDelegates: context.localizationDelegates,
-            supportedLocales: context.supportedLocales,
-            locale: context.locale,
-            home: const ChatbotScreen(),
+            home: const SplashView(),
           );
         },
       ),
