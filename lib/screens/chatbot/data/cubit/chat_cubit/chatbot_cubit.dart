@@ -13,14 +13,15 @@ class ChatCubit extends Cubit<ChatState> {
   final Map<String, String> _imageCache = {};
 
   ChatCubit()
-      : super(ChatState(
-          messages: [],
-          isLoading: false,
-          currentTypingResponse: '',
-        ));
+    : super(
+        ChatState(messages: [], isLoading: false, currentTypingResponse: ''),
+      );
 
-  Future<void> sendMessage(String message,
-      {String? imagePath, String? filePath}) async {
+  Future<void> sendMessage(
+    String message, {
+    String? imagePath,
+    String? filePath,
+  }) async {
     // Add user message to chat
     final userMessage = Message(
       content: message,
@@ -30,10 +31,12 @@ class ChatCubit extends Cubit<ChatState> {
       filePath: filePath,
     );
 
-    emit(state.copyWith(
-      messages: [...state.messages, userMessage],
-      isLoading: true,
-    ));
+    emit(
+      state.copyWith(
+        messages: [...state.messages, userMessage],
+        isLoading: true,
+      ),
+    );
 
     try {
       // Cache image data if provided
@@ -45,8 +48,11 @@ class ChatCubit extends Cubit<ChatState> {
       }
 
       // Call the AI service with conversation history
-      final response = await _callAIService(message,
-          imagePath: imagePath, filePath: filePath);
+      final response = await _callAIService(
+        message,
+        imagePath: imagePath,
+        filePath: filePath,
+      );
 
       // Start typing animation
       await _animateResponse(response);
@@ -58,17 +64,16 @@ class ChatCubit extends Cubit<ChatState> {
         timestamp: DateTime.now(),
       );
 
-      emit(state.copyWith(
-        messages: [...state.messages, botMessage],
-        isLoading: false,
-        currentTypingResponse: '',
-      ));
+      emit(
+        state.copyWith(
+          messages: [...state.messages, botMessage],
+          isLoading: false,
+          currentTypingResponse: '',
+        ),
+      );
     } catch (e) {
       // Handle error
-      emit(state.copyWith(
-        isLoading: false,
-        currentTypingResponse: '',
-      ));
+      emit(state.copyWith(isLoading: false, currentTypingResponse: ''));
 
       final errorMessage = Message(
         content:
@@ -77,17 +82,17 @@ class ChatCubit extends Cubit<ChatState> {
         timestamp: DateTime.now(),
       );
 
-      emit(state.copyWith(
-        messages: [...state.messages, errorMessage],
-      ));
+      emit(state.copyWith(messages: [...state.messages, errorMessage]));
     }
   }
 
-  Future<String> _callAIService(String message,
-      {String? imagePath, String? filePath}) async {
+  Future<String> _callAIService(
+    String message, {
+    String? imagePath,
+    String? filePath,
+  }) async {
     try {
-      const apiKey =
-          'AIzaSyBxN2AO8itNbzkuH021Is4BJw2RKxUJ5Cw'; // Replace with your actual API key
+      const apiKey = 'API_KEY'; // Replace with your actual API key
 
       // Use the correct, current Gemini API endpoint structure
       const String url =
@@ -113,8 +118,8 @@ class ChatCubit extends Cubit<ChatState> {
           parts.add({
             'inline_data': {
               'mime_type': _getMimeType(msg.imageUrl!),
-              'data': _imageCache[msg.imageUrl!]
-            }
+              'data': _imageCache[msg.imageUrl!],
+            },
           });
         }
 
@@ -142,8 +147,8 @@ class ChatCubit extends Cubit<ChatState> {
         currentParts.add({
           'inline_data': {
             'mime_type': _getMimeType(imagePath),
-            'data': base64Image
-          }
+            'data': base64Image,
+          },
         });
       }
       // Add current message to contents
@@ -182,7 +187,8 @@ class ChatCubit extends Cubit<ChatState> {
       } else {
         print('Error response: ${response.statusCode}, ${response.data}');
         throw Exception(
-            'Failed to get response: ${response.statusCode}, ${response.data}');
+          'Failed to get response: ${response.statusCode}, ${response.data}',
+        );
       }
     } catch (e) {
       print('Dio error: ${e.toString()}');
@@ -229,18 +235,12 @@ class ChatCubit extends Cubit<ChatState> {
 
   // Add this method to ChatCubit:
   void loadMessages(List<Message> messages) {
-    emit(state.copyWith(
-      messages: messages,
-    ));
+    emit(state.copyWith(messages: messages));
   }
 
   // Clear conversation history and cache
   void clearConversation() {
     _imageCache.clear();
-    emit(ChatState(
-      messages: [],
-      isLoading: false,
-      currentTypingResponse: '',
-    ));
+    emit(ChatState(messages: [], isLoading: false, currentTypingResponse: ''));
   }
 }
